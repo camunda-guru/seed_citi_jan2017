@@ -1,0 +1,152 @@
+Angular 2— Setting up your working environment (updated: using Beta 15)
+I am assuming that you already have NPM (Node.js Package Manager) installed on your computer (because you will need it - you can find more information on the official web site). It is important to double check that you have a recent version of Node.js (executing node --version), something like 4.2+. I am using Windows to make this work.
+Related Links:
+. Angular 2?—?Our first component
+Steps:
+Install Visual Studio Code (IDE, but you can use pretty much anything you want; pick your favourite IDE: Atom, Webstorm…all of them have good support for TypeScript)
+Install TypeScript
+Create tsconfig.json
+Create typings.json
+Create package.json
+Install Angular 2
+Off you go! You are ready to write your first Angular 2 app.
+1) Installing Visual Studio Code
+As I mentioned before, you can use pretty much any IDE but my preference at this stage is Visual Studio Code. If you want to use the awesome IDE available for Windows and MAC you can download it here.
+John Papa has a great tutorial about it; take a look.
+2) Installing TypeScript
+We are going to write our app in TypeScript, so we will have to install it via npm: (-g means that it will install it globally). As I said I am using Windows, so to run the npm you will have to run the cmd (command prompt). Go to your cmd and execute this command.
+npm install -g typescript
+TypeScript is not required to write Angular 2, but I have chosen this option because of the type system it offers and if you are coming from C# it is really easy to get used to it, you can pretty much write your Angular 2 app using normal ECMAScript 5 (standard JavaScript where most of the apps are written), but I guarantee you that it will look really ugly!
+Now we have installed typescript globally (you can see it here: %AppData%/npm/node_modules/typescript), the next step is to create a new empty folder for our test app and use tsc (stands for TypeScript Compiler) from that new folder to start a project .tsc. Create a new folder whenever you want and open it from the Visual Studio Code. (File > Open Folder > Select Folder)
+3) Creating tsconfig.json
+What is the tsconfig.json file?
+Answer: https://github.com/Microsoft/TypeScript/wiki/tsconfig.json
+…Basically it is a file in a directory that indicates that the directory is the root of a TypeScript project. We can compare it as a project solution (.sln) in a MVC project for example.
+Make sure you run this command in your new folder directory using cmd (command prompt), because it will create for us the file tsconfig.json (after executing the command) that stores the TypeScript compilation options. You can see the tsconfig.json from the Visual Studio Code when created.
+tsc --init --target es5 --sourceMap --experimentalDecorators --emitDecoratorMetadata
+Explaining the flags:
+target es5: Specify that we want to get our TypeScript code compiled to ECMAScript 5 and we can run our code in older browsers.
+sourceMap: Allows us to generate the source maps, i.e files that contain mappings between the generated ES5 code and the original TypeScript code. 
+experimentalDecorators & emitDecoratorMetada: We need those flags to compile, transpile to ECMAScript 5 as we are using TypeScript with decorators (to annotate and modify classes and properties at design time, it basically says things like?—?‘this is a custom property’ or ‘this class is a component (@Component, decorator)).
+The tsconfig.json file contains TypeScript compiler configuration parameters as we said previously and the file looks like this (after being generated):
+{
+ "compilerOptions": {
+    "target": "es5",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "outDir": "built",
+    "rootDir": "."
+ },
+ "exclude": [
+    "node_modules",
+    "typings/main",
+    "typings/main.d.ts" 
+ ]
+}
+As you can see above, the structure consists of two sections. The first section is named compilerOptions and contains command line options which are passed to the TypeScript compiler every time the program is executed. The second section exclude is an array of folders and files in the project directory which should not be processed by the TypeScript compiler and it makes sense to exclude the node_modules directory.
+If you want additional information about the meaning of the various TypeScript compiler options, have a look at: https://github.com/Microsoft/TypeScript/wiki/Compiler-Options
+4) Creating typings.json
+Add typings.json file to the project folder and copy/paste the following:
+{ 
+    "ambientDependencies": 
+  { 
+         "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2" 
+   }
+}
+More info
+5) Creating package.json
+To add Angular 2 library into our project we are going to download it using NPM; which will help us with dependencies. Preferably using NPM version 2 to avoid any problems -to check which version you are using you only need to type on the cmd (windows command prompt):
+npm -v
+If you have a more up to date / advanced version, you can install NPM version 2 typing:
+npm install -g npm@2
+Creating the the package.json:
+npm init
+…and answer Enter to every question. (Bear in mind that you might need to write the name of the project….)
+And then….
+6) Installing Angular 2
+npm install angular2 --save
+then.....
+npm install systemjs --save
+We are going to install also other dependencies listed:
+npm install typings --save-dev
+Typings: Angular uses TypeScript type definition files?—?d.ts files?—?to tell the compiler about the libraries loaded.
+npm install concurrently --save-dev
+Concurrently: we can execute two npm commands at the same time. For Angular 2 this is great because we always need to perform two steps: run the TypeScript compiler and then execute the lite-server to deliver our application to the browser. Instead of having two terminals executing two commands separately, concurrently lets us to do this in one step by using the concurrent command.
+npm install lite-server --save-dev
+Lite-server: A package that contains a lightweight development Node.js server that serves a web app, open it in the browser and refresh it when the html or JavaScript change.
+After running all those commands above, if you open the package.json, your file should look like this (I will shortly explain the scripts section?-?I added it manually and it will be useful later):
+{
+ "name": "test",
+ "version": "1.0.0",
+ "description": "",
+ "main": "index.js",
+ "scripts": {
+    "postinstall": "npm run typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "lite": "lite-server",
+    "app": "concurrent \"npm run tsc:w\" \"npm run lite\" ",
+    "typings": "typings",
+ },
+ "author": "",
+ "license": "ISC",
+ "devDependencies": {
+    "concurrently": "^2.0.0",
+    "lite-server": "^2.2.0",
+    "typescript": "^1.8.10",
+    "typings": "^0.7.12"
+ },
+ "dependencies": {
+    "angular2": "^2.0.0-beta.15",
+    "es6-shim": "^0.35.0",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "^5.0.0-beta.2",
+    "zone.js": "^0.6.10”,
+    "systemjs": "0.19.26"
+ }
+}
+If you are having problems installing the dependencies you can always copy and paste the structure of the file above, create a file called package.json in your new empty folder, open the cmd (command prompt) and point to the directory of the new folder and then run the follow command: npm install, which will install all the dependencies defined in package.json and will automatically install one by one in the node_modules subfolder in the project. Doing that you can avoid all the steps I have just said and sometimes is nice to have a package.json file ready to set a new quick demo, test project.
+Let’s have a quick look at some parts of the package.json:
+"devDependencies": {
+    "concurrently": "^2.0.0",
+    "lite-server": "^2.2.0",
+    "typescript": "^1.8.10",
+    "typings": "^0.7.12"
+ },
+ "dependencies": {
+    "angular2": "^2.0.0-beta.15",
+    "es6-shim": "^0.35.0",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "^5.0.0-beta.2",
+    "zone.js": "^0.6.10”,
+    "systemjs": "0.19.26"
+ }
+“dependencies” contains all dependencies used in our application to implement the functionality we want to have and we could add other entries for example for bootstrap or jquery.
+“devDependencies” section is listening the dependencies required at development time only.
+What about the scripts section?
+“scripts” section is where we are defining command shortcuts and it will be executed by npm command.
+"scripts": {
+    "postinstall": "npm run typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "lite": "lite-server",
+    "app": "concurrent \"npm run tsc:w\" \"npm run lite\" ",
+    "typings": "typings"
+ },
+postinstall?—?called by npm automatically after it successfully completes package installation. This script installs the TypeScript definition files this app requires.
+tsc?—?It runs one time the TypeScript compiler.
+tsc:w?—?“-w means watch” enables the watch mode and listen for file changes.
+lite?—?It runs the static file web server.
+app?—?It uses concurrently to run the tsc:w and the lite script at the same time. (doing this we can avoid having two commands running in different windows)
+typings?—?runs the typings tool
+To run the command you have to make sure that the current directory is the project folder and then you only need to execute the npm command as follows:
+npm run app
+Running this command right now will not do anything because we did not create our first Angular 2 component. Let’s keep that for the next article…
+7) Off you go! You are ready to write your first Angular 2 app!
+That’s all really, no more steps needed! You are ready to create your first Angular 2 app using TypeScript. In the next article I will explain how to achieve this! If you want, you can always create a “.ts” file on this project and start playing with TypeScript. :)
+The next step will be to create an index.html and configure the SystemJS, then the boot.ts (Angular 2 bootstrap) and to finalise the Angular 2 component to make it work!
